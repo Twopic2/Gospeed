@@ -4,7 +4,7 @@ A high-performance encrypted file transfer benchmark written in Go that measures
 ## Overview 
 Gospeed is designed to benchmark the performance of AES-256-GCM encryption for file operations. It tests read/write speeds and latency across multiple data sizes, utilizing disk IO. 
 
-** Inspired by gocryptfs **
+*Inspired by gocryptfs*
 
 ## Prerequisites 
 
