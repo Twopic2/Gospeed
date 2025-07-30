@@ -14,15 +14,15 @@ Needs +16Gbs of memory _Femboys loves ram_
 
 ## Installation
 
-# Manual Build
+### Manual Build
 ```bash
 go build -o gospeed .
 go run gospeed
 ```
 
-# Architecture
+## Architecture
 
-## Encryption Details
+### Encryption Details
 - *Algorithm*: AES-256-GCM (Galois/Counter Mode)
 - *Key Size*: 256-bit (32 bytes)
 - *Symetrical key exchange*
