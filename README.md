@@ -28,7 +28,8 @@ or
 
 # Expected Output
 
-![Image](https://imgur.com/a/CnrSTf6)
+<img width="1002" height="516" alt="Screenshot 2025-07-30 at 2 52 24 AM" src="https://github.com/user-attachments/assets/c91a5047-0a7a-4864-a8ad-6a4ccb61022b" />
+
 
 ## Encryption Details
 - *Algorithm*: AES-256-GCM (Galois/Counter Mode)
