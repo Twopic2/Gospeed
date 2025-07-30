@@ -20,9 +20,18 @@ go build -o gospeed .
 go run gospeed
 ```
 
-## Architecture
+or
 
-### Encryption Details
+```bash
+./gospeed
+```
+
+# Expected Output
+
+![Image](https://imgur.com/a/CnrSTf6)
+
+## Encryption Details
 - *Algorithm*: AES-256-GCM (Galois/Counter Mode)
 - *Key Size*: 256-bit (32 bytes)
 - *Symetrical key exchange*
+
