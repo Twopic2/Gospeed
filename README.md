@@ -15,14 +15,9 @@ Gospeed is designed to benchmark the performance of AES-256-GCM encryption for f
 ## Installation
 
 ### Manual Build
+
 ```bash
 go build -o gospeed .
-go run gospeed
-```
-
-or
-
-```bash
 ./gospeed
 ```
 
