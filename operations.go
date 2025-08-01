@@ -19,11 +19,6 @@ type readResults struct {
 	Error     error
 }
 
-/**
-After some testing, I found out that the early versions of the code wasn't utilizing the diskIO to its full extent but was
-rather using memory/cache. I'm trying to fix this in newer version but with my shitty coding skills, don't reley on much.
-*/
-
 func write(data []byte, key []byte, file string) (time.Duration, float64, error) {
 	start := time.Now()
 
