@@ -49,27 +49,3 @@ func decrypt(decrypText []byte, key []byte) ([]byte, error) {
 
 	return plainText, nil
 }
-
-/**
-// Doesn't have utilize AES-ni instructions, also symmetric key block cipher
-func weakEncrypt(plaintext []byte, key []byte) ([]byte, error) {
-	block, err := chacha20poly1305.New(key)
-	checkError(err)
-
-	chachaNonce := make([]byte, block.NonceSize())
-
-	ciphertext := block.Seal(chachaNonce, chachaNonce, plaintext, nil)
-	return ciphertext, nil
-}
-
-func weakDecrypt(decryptText []byte, key []byte) ([]byte, error) {
-	block, err := chacha20poly1305.New(key)
-	checkError(err)
-
-	chachaNonce := block.NonceSize()
-
-	nonce, decrypText := decryptText[:chachaNonce], decryptText[chachaNonce:]
-	plaintext, err := block.Open(nil, nonce, decrypText, nil)
-	return plaintext, err
-}
-*/

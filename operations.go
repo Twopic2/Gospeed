@@ -138,38 +138,3 @@ func latency(data []byte, key []byte, file string) (time.Duration, error) {
 
 	return time.Since(start), nil
 }
-
-/*
-func slowWrite(data []byte, key []byte, file string) (time.Duration, float64, error) {
-	start := time.Now()
-
-	encryptedData, err := weakEncrypt(data, key)
-	checkError(err)
-
-	err = os.WriteFile(file, encryptedData, 0644)
-	checkError(err)
-
-	duration := time.Since(start)
-	bytesTime := float64(len(encryptedData))
-
-	return duration, bytesTime, nil
-}
-
-func slowRead(file string, key []byte) (time.Duration, float64, []byte, error) {
-	start := time.Now()
-
-	encryptedData, err := os.ReadFile(file)
-	checkError(err)
-
-	decryptData, err := weakDecrypt(encryptedData, key)
-	checkError(err)
-
-	duration := time.Since(start)
-	bytesTime := float64(len(encryptedData))
-
-	return duration, bytesTime, decryptData, nil
-}
-
-func slowLatency(data []byte, key []byte, file string) (time.Duration, err) {
-}
-*/
