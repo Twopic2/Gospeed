@@ -10,7 +10,7 @@ Gospeed is designed to benchmark the performance of AES-256-GCM encryption for f
 
 - Go 1.22 or later (latest version recommended)
 - CPU with AES-NI instruction set support _non-aes or softwware based encryption methods will be implemented in the future._ 
-- Uses only 4gb or ram
+- Uses only 4gb of memory
 
 ## Installation
 
