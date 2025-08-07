@@ -30,9 +30,6 @@ const (
 
 func runAES(sizes []int, filename string) []Result {
 	numCpus := runtime.NumCPU()
-
-	var mu sync.Mutex
-
 	result := make([]Result, len(sizes))
 	key := make([]byte, 32) // 256bit key
 	rand.Read(key)
@@ -41,63 +38,75 @@ func runAES(sizes []int, filename string) []Result {
 		data := make([]byte, size)
 		rand.Read(data)
 
-		_, _, err := write(data, key, filename)
+		latencyTime, err := latency(data, key, filename)
 		if err != nil {
-			fmt.Printf("Error writing initial file: %v\n", err)
+			fmt.Printf("Error measuring latency: %v\n", err)
 			continue
 		}
 
-		numWorkers := min(numCpus, len(data))
+		numWorkers := min(numCpus, 8)
 		coreChunks := spiltCores(data, numWorkers)
 
 		var wg sync.WaitGroup
+		writeResultsChannel := make(chan writeResults, numWorkers)
 
-		// Go routines make
-		writeResultsChannel := make(chan writeResults, numCpus)
-
+		writeStart := time.Now()
 		for w := 0; w < numWorkers; w++ {
 			wg.Add(1)
-			go func(i int, chunk []byte) {
-				mu.Lock()
-				writeConcurrent(chunk, key, filename, &wg, writeResultsChannel)
-				mu.Unlock()
-			}(w, coreChunks[w])
+			go writeConcurrent(coreChunks[w], key, &wg, writeResultsChannel)
 		}
 		wg.Wait()
+		totalWriteTime := time.Since(writeStart)
 
-		totalWriteDuration := time.Duration(0)
-		for i := 0; i < numWorkers; i++ {
+		for w := 0; w < numWorkers; w++ {
 			writeResult := <-writeResultsChannel
-			totalWriteDuration += writeResult.Duration
+			if writeResult.Error != nil {
+				fmt.Printf("Write error: %v\n", writeResult.Error)
+			}
 		}
 
-		readResultsChannel := make(chan readResults, numCpus)
+		readFiles := make([]string, numWorkers)
+		for w := 0; w < numWorkers; w++ {
+			readFiles[w] = fmt.Sprintf("%s_read_%d", filename, w)
+			_, _, err := write(coreChunks[w], key, readFiles[w])
+			if err != nil {
+				fmt.Printf("Error creating read test file %d: %v\n", w, err)
+				continue
+			}
+			defer os.Remove(readFiles[w])
+		}
+
+		readResultsChannel := make(chan readResults, numWorkers)
+		readStart := time.Now()
+
 		for w := 0; w < numWorkers; w++ {
 			wg.Add(1)
-			go func(i int, filename string) {
-				mu.Lock()
-				readConcurrent(filename, key, &wg, readResultsChannel)
-				mu.Unlock()
-			}(w, filename)
+			go readConcurrent(readFiles[w], key, &wg, readResultsChannel)
 		}
 		wg.Wait()
+		totalReadTime := time.Since(readStart)
 
-		totalReadDurration := time.Duration(0)
-		for i := 0; i < numWorkers; i++ {
-
+		for w := 0; w < numWorkers; w++ {
 			readResult := <-readResultsChannel
-			totalReadDurration += readResult.Duration
+			if readResult.Error != nil {
+				fmt.Printf("Read error: %v\n", readResult.Error)
+			}
 		}
 
-		latencyTime, _ := latency(data, key, filename)
+		writeThroughput := float64(size) / totalWriteTime.Seconds() / megaByteF
+		readThroughput := float64(size) / totalReadTime.Seconds() / megaByteF
 
-		writeThroughput := float64(size) / totalWriteDuration.Seconds() / megaByteF
-		readThroughput := float64(size) / totalReadDurration.Seconds() / megaByteF
+		if totalWriteTime == 0 {
+			writeThroughput = 0
+		}
+		if totalReadTime == 0 {
+			readThroughput = 0
+		}
 
 		result[i] = Result{
 			Size:            size,
-			WriteTime:       totalWriteDuration,
-			ReadTime:        totalReadDurration,
+			WriteTime:       totalWriteTime,
+			ReadTime:        totalReadTime,
 			LatencyTime:     latencyTime,
 			WriteThroughput: writeThroughput,
 			ReadThroughput:  readThroughput,
